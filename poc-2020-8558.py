@@ -22,6 +22,7 @@ def main():
 
     server = TCP_client.tcplink(Raw, "127.0.0.1", args.targetport)
     server.send(b"GET /metrics HTTP/1.0\r\n\r\n")
+    print(repr(server.recv()))
 
     ########################################
     # listen
