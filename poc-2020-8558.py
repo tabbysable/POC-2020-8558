@@ -13,14 +13,14 @@ def mangle(pkt):
         pkt[IP][TCP].chksum = None
         pkt[Ether].dst = targetmac
         pkt[Ether].src = hostmac
-        print("mangled out: "+repr(pkt))
-        sendp(pkt,iface = targetiface)
+        #print("mangled out: "+repr(pkt))
+        sendp(pkt,iface = targetiface,verbose=False)
     if pkt[IP].src == "127.0.0.1":
         pkt[IP].src = args.fakedestination
         pkt[IP].chksum = None
         pkt[IP][TCP].chksum = None
-        print("mangled in: "+repr(pkt))
-        send(pkt[IP])
+        #print("mangled in: "+repr(pkt))
+        send(pkt[IP],verbose=False)
     return None
 
 ########################################
