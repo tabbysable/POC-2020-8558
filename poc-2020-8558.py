@@ -1,26 +1,28 @@
 #! /usr/bin/env python3
 
-import socket
 import argparse
 
 from scapy.all import *
 
 def mangle(pkt):
-    # Duplicate the packets of interest, but redirected to remote localhost
-    if pkt[IP].dst == args.fakedestination:
-        pkt[IP].dst = "127.0.0.1"
-        pkt[IP].chksum = None
-        pkt[IP][TCP].chksum = None
-        pkt[Ether].dst = targetmac
-        pkt[Ether].src = hostmac
-        #print("mangled out: "+repr(pkt))
-        sendp(pkt,iface = targetiface,verbose=False)
-    if pkt[IP].src == "127.0.0.1":
-        pkt[IP].src = args.fakedestination
-        pkt[IP].chksum = None
-        pkt[IP][TCP].chksum = None
-        #print("mangled in: "+repr(pkt))
-        send(pkt[IP],verbose=False)
+    if pkt.haslayer(IP):
+        # Duplicate the packets of interest, but redirected to remote localhost
+        if pkt[IP].dst == args.fakedestination:
+            pkt[IP].dst = "127.0.0.1"
+            pkt[IP].chksum = None
+            if pkt.haslayer(TCP): pkt[IP][TCP].chksum = None
+            if pkt.haslayer(UDP): pkt[IP][UDP].chksum = None
+            pkt[Ether].dst = targetmac
+            pkt[Ether].src = hostmac
+            #print("mangled out: "+repr(pkt))
+            sendp(pkt,iface = targetiface,verbose=False)
+        if pkt[IP].src == "127.0.0.1":
+            pkt[IP].src = args.fakedestination
+            pkt[IP].chksum = None
+            if pkt.haslayer(TCP): pkt[IP][TCP].chksum = None
+            if pkt.haslayer(UDP): pkt[IP][UDP].chksum = None
+            #print("mangled in: "+repr(pkt))
+            send(pkt[IP],verbose=False)
     return None
 
 ########################################
