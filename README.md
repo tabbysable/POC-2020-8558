@@ -82,4 +82,4 @@ Because this script uses raw sockets to send and receive the "localhost" packets
 
 [Adam Shostack: Threat Modeling](https://www.threatmodelingbook.com/)
 
-Shout-out to Ian Coldwater, Brad Geesaman, and Duffie Cooley. Thanks for the thoughts, advice, and lols, y'all. Honk the planet!
+Shout-out to Ian Coldwater, Brad Geesaman, Duffie Cooley, and Laurent Bernaille. Thanks for the thoughts, advice, and lols, y'all. Honk the planet!
