@@ -73,9 +73,13 @@ Because this script uses raw sockets to send and receive the "localhost" packets
 
 # End Material
 [Kubernetes issue for this CVE on GitHub](https://github.com/kubernetes/kubernetes/issues/92315)
+
 [Kernel IP sysctl documentation](https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt)
+
 [RFC 1122](https://tools.ietf.org/html/rfc1122)
+
 [Wikipedia: OSI Model](https://en.wikipedia.org/wiki/OSI_model)
+
 [Adam Shostack: Threat Modeling](https://www.threatmodelingbook.com/)
 
 Shout-out to Ian Coldwater, Brad Geesaman, and Duffie Cooley. Thanks for the thoughts, advice, and lols, y'all. Honk the planet!
